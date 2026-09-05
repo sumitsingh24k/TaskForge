@@ -10,7 +10,7 @@ const createTask = (req, res) => {
         priority
     };
     tasks.push(newTask)
-    req.status(201).json({
+    res.status(201).json({
         success:true,
         message:"task is created",
         tasks:newTask

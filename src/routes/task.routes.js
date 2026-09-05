@@ -6,7 +6,7 @@ const  { createTask , getTasks ,getTaskById,UpdateTask,DeleteTask}=require('../c
 router.get('/',getTasks);
 router.get('/:id',getTaskById);
 router.post('/',createTask);
-router.put('/:id',UpdateTask);
+router.patch('/:id',UpdateTask);
 router.delete('/:id',DeleteTask);
 
 module.exports=router;
