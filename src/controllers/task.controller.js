@@ -1,8 +1,8 @@
 const taskservices=require('../services/task.service');
 
-const createTask = (req, res,next ) => {
+const createTask = async (req, res,next ) => {
     try{
-        const task = taskservices.createTask(req.body); 
+        const task = await taskservices.createTask(req.body); 
         res.status(201).json({
             success: true,
             message: "Task created successfully",
@@ -13,9 +13,9 @@ const createTask = (req, res,next ) => {
         next(error);
     }
 }
-const getTasks=(req,res,next)=>{
+const getTasks=async(req,res,next)=>{
     try{
-        const tasks= taskservices.getTasks();
+        const tasks= await  taskservices.getTasks();
         res.json({
             success: true,
             message: "Tasks fetched successfully",
@@ -26,10 +26,10 @@ const getTasks=(req,res,next)=>{
         next(error);
     }
 }
-const getTaskById=(req,res,next)=>{
+const getTaskById=async(req,res,next)=>{
     try{
         const taskId=(req.params.id);
-        const task=taskservices.getTaskById(taskId);
+        const task=await taskservices.getTaskById(taskId);
         if(!task){
             return res.status(404).json({
                 success:false,
@@ -46,10 +46,10 @@ const getTaskById=(req,res,next)=>{
     catch(error){
         next(error);  }  
 }
-const UpdateTask=(req,res,next)=>{
+const UpdateTask=async(req,res,next)=>{
     try{
         const taskId=req.params.id;
-        const task= taskservices.UpdateTask(taskId, req.body);
+        const task= await taskservices.updateTask(taskId, req.body);
         if(!task){
             return res.status(404).json({
                 success:false,
@@ -66,25 +66,29 @@ const UpdateTask=(req,res,next)=>{
         next(error);
     }
 }
-const DeleteTask=(req,res,next)=>{
-    try{
-          const taskId= req.params.id;
-          const task= taskservices.DeleteTask(taskId);
-        if (!task){
+const DeleteTask = async (req, res, next) => {
+    try {
+        const taskId = req.params.id;
+
+        const task = await taskservices.deleteTask(taskId);
+
+        if (!task) {
             return res.status(404).json({
-                success:false,
-                message:"task not found"
+                success: false,
+                message: "task not found"
             });
         }
+
         res.json({
-            success:true,
-            message:"task deleted successfully"
+            success: true,
+            message: "task deleted successfully",
+            task: task
         });
     }
-    catch(error){
+    catch (error) {
         next(error);
     }
-}
+};
 module.exports={
     createTask,
     getTasks,

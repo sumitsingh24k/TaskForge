@@ -6,7 +6,7 @@ const createTask=async(taskData)=>{
     return task;
 }
 const getTasks=async()=>{
-    const tasks=await Task.findall();
+    const tasks=await Task.find();
     return tasks;
 }
 
@@ -15,10 +15,11 @@ const getTaskById=async(taskId)=>{
     return task;
 }
 const updateTask=async(taskId, updateData)=>{
-    const task=await Task.findByIdAndUpdate(taskId, updateData, { new: true });
-    return task;
-}
+    const task=await Task.findByIdAndUpdate(taskId, updateData,{new: true,runValidators: true}
+    );
 
+    return task;
+};
 const deleteTask=async(taskId)=>{
     const task= await Task.findByIdAndDelete(taskId);
     return task;
