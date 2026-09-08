@@ -1,13 +1,15 @@
-const mongoose= require('mongoose')
+const mongoose = require('mongoose');
 
-const connectDB = async () =>{
-    try{
-        await mongoose.connect(process.env.mongoURI)
-        console.log('MongoDB connected successfully')
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.mongoURI);
+        console.log('MongoDB connected successfully');
+    }
+    catch (error) {
+        console.error('MongoDB Connection Failed:', error.message);
+        // DB ke bina server chalane ka koi matlab nahi
+        process.exit(1);
+    }
+};
 
-    }
-    catch(error){
-        console.log("MongoDB Connection Failed:", error.message);
-    }
-}
-module.exports = connectDB
+module.exports = connectDB;

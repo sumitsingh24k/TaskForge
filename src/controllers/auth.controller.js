@@ -3,7 +3,8 @@ const authService = require('../services/auth.service');
 const registerUser = async (req, res, next) => {
     try{ 
         const user = await authService.registerUser(req.body);
-        res.status(201).json(user)({
+        res.status(201).json({
+            success: true,
             message: "User registered successfully",
             user: user
         }) ;
@@ -15,22 +16,29 @@ const registerUser = async (req, res, next) => {
 }
 
 const loginUser = async (req, res, next) => {
-    try{
-        const user= await authservice.loginUser(req.body);
-        res.json({
-            message: "User logged in successfully",
-            user: user
+    try {
+        const { email, password } = req.body;
+        const result = await authService.loginUser(
+            email,
+            password
+        );
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            user: result.user,
+            token: result.token
         });
-    }
-    catch(error){
+
+    } catch (error) {
         next(error);
     }
-}
-
+    
+};
 const getCurrentUser = async (req, res, next) => {
     try{
         const user = await authService.getCurrentUser(req.user.id);
         res.json({
+            success: true,
             message: "Current user fetched successfully",
             user: user
         }); 

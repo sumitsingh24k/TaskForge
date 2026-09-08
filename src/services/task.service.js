@@ -1,35 +1,55 @@
-const Task=require('../models/Task');
+const Task = require('../models/Task');
 
-
-const createTask=async(taskData, userId)=>{
-    const task=await Task.create({...taskData, user: userId});
-    return task;
-}
-const getTasks=async( userId )=>{
-    const tasks=await Task.find({ user: userId });
-    return tasks;
-}
-
-const getTaskById=async(taskId, userId)=>{
-    const task = await Task.findById(taskId);
-    if (!task || task.user.toString() !== userId) {
-        throw new Error("Task not found or access denied");
-    }
-    return task;
-}
-const updateTask=async(taskId, updateData, userId)=>{
-    const task = await Task.findById(taskId);
-    if (!task || task.user.toString() !== userId) {
-        throw new Error("Task not found or access denied");
-    }
-    const updatedTask = await Task.findByIdAndUpdate(taskId, updateData, { new: true, runValidators: true });
-    return updatedTask;
+const httpError = (message, statusCode) => {
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    return error;
 };
-const deleteTask=async(taskId,userId  )=>{
+
+// task dhoondo aur ownership verify karo
+const findOwnedTask = async (taskId, userId) => {
     const task = await Task.findById(taskId);
-    if (!task || task.user.toString() !== userId) {
-        throw new Error("Task not found or access denied");
+
+    if (!task) {
+        throw httpError('Task not found', 404);
     }
+
+    if (task.user.toString() !== userId.toString()) {
+        throw httpError('Access denied', 403);
+    }
+
+    return task;
+};
+
+const createTask = async (taskData, userId) => {
+    // client jo bhi bheje, task ka owner hamesha logged-in user hi hoga
+    const { user, _id, ...safeData } = taskData;
+    return await Task.create({ ...safeData, user: userId });
+};
+
+const getTasks = async (userId) => {
+    return await Task.find({ user: userId }).sort({ createdAt: -1 });
+};
+
+const getTaskById = async (taskId, userId) => {
+    return await findOwnedTask(taskId, userId);
+};
+
+const updateTask = async (taskId, updateData, userId) => {
+    await findOwnedTask(taskId, userId);
+
+    // owner change nahi hone dena
+    const { user, _id, ...safeData } = updateData;
+
+    return await Task.findByIdAndUpdate(taskId, safeData, {
+        new: true,
+        runValidators: true
+    });
+};
+
+const deleteTask = async (taskId, userId) => {
+    await findOwnedTask(taskId, userId);
     return await Task.findByIdAndDelete(taskId);
-}
-module.exports={createTask, getTasks, getTaskById, updateTask, deleteTask}; 
+};
+
+module.exports = { createTask, getTasks, getTaskById, updateTask, deleteTask };

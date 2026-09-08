@@ -1,12 +1,16 @@
-const express= require('express');
-const router=express.Router();
-const  { createTask , getTasks ,getTaskById,UpdateTask,DeleteTask}=require('../controllers/task.controller');
+const express = require('express');
+const router = express.Router();
 
+const { createTask, getTasks, getTaskById, UpdateTask, DeleteTask } = require('../controllers/task.controller');
+const authMiddleware = require('../middleware/auth.middleware');
 
-router.get('/',getTasks);
-router.get('/:id',getTaskById);
-router.post('/',createTask);
-router.patch('/:id',UpdateTask);
-router.delete('/:id',DeleteTask);
+// saare task routes protected hain
+router.use(authMiddleware);
 
-module.exports=router;
+router.get('/', getTasks);
+router.post('/', createTask);
+router.get('/:id', getTaskById);
+router.patch('/:id', UpdateTask);
+router.delete('/:id', DeleteTask);
+
+module.exports = router;

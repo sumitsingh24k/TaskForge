@@ -1,11 +1,13 @@
-const express= require('express');
-const router=express.Router();
+const express = require('express');
+const router = express.Router();
 
-const { registerUser, loginUser ,getCurrentUser  } = require('../controllers/auth.controller');
+const { registerUser, loginUser, getCurrentUser } = require('../controllers/auth.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
-router.post('/auth/register', registerUser);
-router.post('/auth/login', loginUser);
-router.get('/auth/me', authMiddleware, getCurrentUser);
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
-module.exports=router;
+// /me har authenticated user ke liye hai -- sirf admin ke liye nahi
+router.get('/me', authMiddleware, getCurrentUser);
+
+module.exports = router;
