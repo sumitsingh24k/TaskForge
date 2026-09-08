@@ -2,7 +2,7 @@ const taskservices=require('../services/task.service');
 
 const createTask = async (req, res,next ) => {
     try{
-        const task = await taskservices.createTask(req.body); 
+        const task = await taskservices.createTask(req.body, req.user._id); 
         res.status(201).json({
             success: true,
             message: "Task created successfully",
@@ -15,7 +15,7 @@ const createTask = async (req, res,next ) => {
 }
 const getTasks=async(req,res,next)=>{
     try{
-        const tasks= await  taskservices.getTasks();
+        const tasks= await  taskservices.getTasks(req.user._id);
         res.json({
             success: true,
             message: "Tasks fetched successfully",
@@ -29,7 +29,7 @@ const getTasks=async(req,res,next)=>{
 const getTaskById=async(req,res,next)=>{
     try{
         const taskId=(req.params.id);
-        const task=await taskservices.getTaskById(taskId);
+        const task=await taskservices.getTaskById(taskId, req.user._id);
         if(!task){
             return res.status(404).json({
                 success:false,
@@ -49,7 +49,7 @@ const getTaskById=async(req,res,next)=>{
 const UpdateTask=async(req,res,next)=>{
     try{
         const taskId=req.params.id;
-        const task= await taskservices.updateTask(taskId, req.body);
+        const task= await taskservices.updateTask(taskId, req.body, req.user._id);
         if(!task){
             return res.status(404).json({
                 success:false,
@@ -69,16 +69,13 @@ const UpdateTask=async(req,res,next)=>{
 const DeleteTask = async (req, res, next) => {
     try {
         const taskId = req.params.id;
-
-        const task = await taskservices.deleteTask(taskId);
-
+        const task = await taskservices.deleteTask(taskId, req.user._id);
         if (!task) {
             return res.status(404).json({
                 success: false,
                 message: "task not found"
             });
         }
-
         res.json({
             success: true,
             message: "task deleted successfully",
